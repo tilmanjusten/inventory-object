@@ -1,0 +1,22 @@
+{
+  "name": "inventory-object",
+  "version": "1.0.0",
+  "description": "Model of an inventory object used in component-inventory and partial-extract",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tilmanjusten/inventory-object.git"
+  },
+  "keywords": [
+    "inventory"
+  ],
+  "author": "Tilman Justen <info@tilmanjusten.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tilmanjusten/inventory-object/issues"
+  },
+  "homepage": "https://github.com/tilmanjusten/inventory-object#readme"
+}
