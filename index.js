@@ -12,8 +12,8 @@ var _ = require('lodash'),
  * @param indent
  * @return string
  */
-function properIndentation(line, indent) {
-    return line.replace(/\t/, indent || '');
+function properIndentation(line, indent = '') {
+    return line.replace(/\t/, indent);
 }
 
 /**
@@ -24,7 +24,7 @@ function properIndentation(line, indent) {
  */
 function countWhitespace(line) {
     // return a somewhat high value for empty lines
-    return line.length ? line.match(/^\s*/)[0].length : 9999;
+    return line.length ? parseInt(line.match(/^\s*/)[0].length, 10) : 9999;
 }
 
 /**
@@ -43,14 +43,10 @@ function getLeadingWhitespace(previous, current) {
  *
  * @param lines
  * @param offset
- * @returns {Array}
+ * @returns {Array|*|{}}
  */
-function raiseIndent(lines, offset) {
-    offset = offset || '    ';
-
-    return lines.map(function (line) {
-        return offset + line;
-    });
+function raiseIndent(lines, offset = '    ') {
+    return lines.map((line) => offset + line);
 }
 
 /**
@@ -60,7 +56,7 @@ function raiseIndent(lines, offset) {
  * @returns {{before: '', after: ''}}
  */
 function formalizeWrap(wrap) {
-    var result = {before: '', after: ''};
+    const result = { before: '', after: '' };
 
     if ((typeof wrap === 'string' && wrap.length > 0) || typeof wrap === 'number') {
         result.before = result.after = wrap;
@@ -68,11 +64,10 @@ function formalizeWrap(wrap) {
         result.before = [].slice.call(wrap, 0, 1)[0];
         result.after = wrap.length > 1 ? [].slice.call(wrap, 1, 2)[0] : result.before;
     } else if (_.isPlainObject(wrap)) {
-        var i = 0;
-        var el;
+        let i = 0;
 
         // crappy method getting the value of the first and second item in object
-        for (el in wrap) {
+        for (let el in wrap) {
             if (!wrap.hasOwnProperty(el)) {
                 continue;
             }
@@ -106,23 +101,19 @@ function formalizeWrap(wrap) {
  * @returns {{}}
  */
 function getBlockOptions(annotation, defaults) {
-    var optionValues = annotation.split(/\w+:/).map(function (item) {
-        return item.replace(/<!--\s?|\s?-->|^\s+|\s+$/, '');
-    }).filter(function (item) {
-        return !!item.length;
-    });
-    var optionKeys = annotation.match(/(\w+):/g).map(function (item) {
-        return item.replace(/[^\w]/, '');
-    });
+    const optionValues = annotation.split(/\w+:/)
+        .map((item) => item.replace(/<!--\s?|\s?-->|^\s+|\s+$/, ''))
+        .filter((item) => !!item.length);
+    const optionKeys = annotation.match(/(\w+):/g).map((item) => item.replace(/[^\w]/, ''));
 
     defaults = defaults || {
             viewWrap: {before: '', after: ''}
         };
 
-    var opts = {};
+    const opts = {};
 
-    optionValues.forEach(function (v, i) {
-        var k = optionKeys[i];
+    optionValues.forEach((v, i) => {
+        const k = optionKeys[i];
 
         if (typeof k !== 'string') {
             return;
@@ -156,9 +147,8 @@ function optionsToDataString(options) {
         return '';
     }
 
-    var prepared = [];
-    var el;
-    var processedOptions = _.assign({}, options);
+    const prepared = [];
+    const processedOptions = _.assign({}, options);
 
     // prepare wrap option
     if (processedOptions.hasOwnProperty('wrap')) {
@@ -169,14 +159,12 @@ function optionsToDataString(options) {
     }
 
     // create data attributes
-    for (el in processedOptions) {
+    for (const el in processedOptions) {
         if (processedOptions.hasOwnProperty(el) === false) {
             continue;
         }
 
-        var value = processedOptions[el];
-        var preparedVal = JSON.stringify(processedOptions[el]);
-        var param = '';
+        const value = processedOptions[el];
 
         // Ignore callbacks
         if (typeof value === 'function') {
@@ -184,10 +172,12 @@ function optionsToDataString(options) {
         }
 
         // Cleanup: Remove leading and trailing " and ', replace " by ' (e.g. in stringified objects)
-        preparedVal = preparedVal.replace(/^['"]|['"]$/g, '').replace(/\\?"/g, "'");
+        const preparedVal = JSON.stringify(processedOptions[el])
+            .replace(/^['"]|['"]$/g, '')
+            .replace(/\\?"/g, "'");
 
         // Build data parameter: data-name="value"
-        param = 'data-' + el + '="' + preparedVal + '"';
+        const param = 'data-' + el + '="' + preparedVal + '"';
 
         prepared.push(param);
     }
@@ -203,9 +193,7 @@ function optionsToDataString(options) {
  * @returns Array
  */
 function trimLines(lines, num) {
-    return lines.map(function (line) {
-        return line.substr(num);
-    });
+    return lines.map((line) => line.substr(num));
 }
 
 /**
@@ -224,7 +212,7 @@ function createId(value) {
  * @returns {{indent: string, origin: string, resources: {classnames: {root: string, body: string}, meta: Array, scriptsFoot: {files: Array, inline: Array}, scriptsHead: {files: Array, inline: Array}, stylesHead: {files: Array, inline: Array}}, templateWrap: {before: string, after: string}, viewWrap: {before: string, after: string}}}
  */
 function getDefaultOptions() {
-    var resources = {
+    const resources = {
         classnames: {
             root: '',
             body: ''
@@ -289,12 +277,9 @@ var InventoryObject = function (data) {
 InventoryObject.prototype.parseData = function(src, opts) {
     opts = _.assign({}, getDefaultOptions(), opts);
 
-    var parts = src.match(/<!--\s*((?:.|\n)*?)-->((?:.|\n)*?)<!--\s*endextract\s*-->/i);
-    var blockOpts = getBlockOptions(parts[1], opts);
-    var content = _.trimRight(_.trimLeft(parts[2], '\n\r'));
-    var category;
-    var name;
-    var group;
+    const parts = src.match(/<!--\s*((?:.|\n)*?)-->((?:.|\n)*?)<!--\s*endextract\s*-->/i);
+    const blockOpts = getBlockOptions(parts[1], opts);
+    const content = _.trimRight(_.trimLeft(parts[2], '\n\r'));
 
     // continue if name is empty
     if (!blockOpts.hasOwnProperty('extract')) {
@@ -302,30 +287,27 @@ InventoryObject.prototype.parseData = function(src, opts) {
     }
 
     // label from name property and fallback to extract value
-    name = blockOpts.hasOwnProperty('name') ? blockOpts.name : blockOpts.extract;
+    const name = blockOpts.hasOwnProperty('name') ? blockOpts.name : blockOpts.getPropertyValue('extract');
 
     // set category name
-    category = blockOpts.hasOwnProperty('category') ? blockOpts.category : this.category;
+    const category = blockOpts.hasOwnProperty('category') ? blockOpts.category : this.category;
 
     // set group
-    group = blockOpts.hasOwnProperty('group') ? blockOpts.group : this.group;
+    const group = blockOpts.hasOwnProperty('group') ? blockOpts.group : this.group;
 
     // process source code
-    var lines = content.split('\n').map(function(line) {
-        // remove possibly existing CR
-        return _.trimRight(line);
-    }).map(function (line) {
-        return properIndentation(line, opts.indent);
-    });
-    var leadingWhitespace = lines.map(countWhitespace);
-    var crop = leadingWhitespace.reduce(getLeadingWhitespace);
-    var viewWrap = blockOpts.wrap;
-    var templateWrapOptions = optionsToDataString(blockOpts);
+    let lines = content.split('\n')
+        .map((line) => _.trimRight(line))
+        .map((line) => properIndentation(line, opts.indent));
+    const leadingWhitespace = lines.map(countWhitespace);
+    const crop = leadingWhitespace.reduce(getLeadingWhitespace);
+    const viewWrap = blockOpts.wrap;
+    const templateWrapOptions = optionsToDataString(blockOpts);
 
     lines = trimLines(lines, crop);
 
-    var viewLines = util._extend([], lines);
-    var templateLines = util._extend([], lines);
+    let viewLines = util._extend([], lines);
+    let templateLines = util._extend([], lines);
 
     // wrap partial if inline option viewWrap: exists
     if (viewWrap.before.length) {
@@ -338,8 +320,8 @@ InventoryObject.prototype.parseData = function(src, opts) {
 
     // add templateWrap
     if (typeof opts.templateWrap === 'object') {
-        var before = opts.templateWrap.before || '';
-        var after = opts.templateWrap.after || '';
+        let before = opts.templateWrap.before || '';
+        let after = opts.templateWrap.after || '';
 
         before = before.replace('{{wrapData}}', templateWrapOptions);
         after = after.replace('{{wrapData}}', templateWrapOptions);
