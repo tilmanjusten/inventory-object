@@ -281,7 +281,7 @@ InventoryObject.prototype.parseData = function(src, opts) {
 
     const parts = src.match(/<!--\s*((?:.|\n)*?)-->((?:.|\n)*?)<!--\s*endextract\s*-->/i);
     const blockOpts = getBlockOptions(parts[1], opts);
-    const content = _.trimRight(_.trimLeft(parts[2], '\n\r'));
+    const content = _.trimEnd(_.trimStart(parts[2], '\n\r'));
 
     // continue if name is empty
     if (!blockOpts.hasOwnProperty('extract')) {
@@ -299,7 +299,7 @@ InventoryObject.prototype.parseData = function(src, opts) {
 
     // process source code
     let lines = content.split('\n')
-        .map((line) => _.trimRight(line))
+        .map((line) => _.trimEnd(line))
         .map((line) => properIndentation(line, opts.indent));
     const leadingWhitespace = lines.map(countWhitespace);
     const crop = leadingWhitespace.reduce(getLeadingWhitespace);
