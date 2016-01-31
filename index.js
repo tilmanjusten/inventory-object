@@ -289,7 +289,7 @@ InventoryObject.prototype.parseData = function(src, opts) {
     }
 
     // label from name property and fallback to extract value
-    const name = blockOpts.hasOwnProperty('name') ? blockOpts.name : blockOpts.getPropertyValue('extract');
+    const name = blockOpts.hasOwnProperty('name') ? blockOpts.name : blockOpts.extract;
 
     // set category name
     const category = blockOpts.hasOwnProperty('category') ? blockOpts.category : this.category;
