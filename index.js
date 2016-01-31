@@ -12,8 +12,8 @@ var _ = require('lodash'),
  * @param indent
  * @return string
  */
-function properIndentation(line, indent = '') {
-    return line.replace(/\t/, indent);
+function properIndentation(line, indent) {
+    return line.replace(/\t/, indent || '');
 }
 
 /**
@@ -45,7 +45,9 @@ function getLeadingWhitespace(previous, current) {
  * @param offset
  * @returns {Array|*|{}}
  */
-function raiseIndent(lines, offset = '    ') {
+function raiseIndent(lines, offset) {
+    offset = offset || '    ';
+
     return lines.map((line) => offset + line);
 }
 
@@ -148,7 +150,7 @@ function optionsToDataString(options) {
     }
 
     const prepared = [];
-    const processedOptions = _.assign({}, options);
+    const processedOptions = Object.assign({}, options);
 
     // prepare wrap option
     if (processedOptions.hasOwnProperty('wrap')) {
@@ -261,7 +263,7 @@ var InventoryObject = function (data) {
     this.optionsData    = data.hasOwnProperty('optionsData') ? data.optionsData : '';
     this.origin         = data.hasOwnProperty('origin') ? data.origin : '';
     this.partial        = data.hasOwnProperty('partial') ? data.partial : '';
-    this.resources      = data.hasOwnProperty('resources') ? data.resources : _.assign({}, getDefaultOptions().resources);
+    this.resources      = data.hasOwnProperty('resources') ? data.resources : Object.assign({}, getDefaultOptions().resources);
     this.template       = data.hasOwnProperty('template') ? data.template : '';
     this.usage          = data.hasOwnProperty('usage') ? data.usage : [];
     this.view           = data.hasOwnProperty('view') ? data.view : '';
@@ -275,7 +277,7 @@ var InventoryObject = function (data) {
  * @param opts
  */
 InventoryObject.prototype.parseData = function(src, opts) {
-    opts = _.assign({}, getDefaultOptions(), opts);
+    opts = Object.assign({}, getDefaultOptions(), opts);
 
     const parts = src.match(/<!--\s*((?:.|\n)*?)-->((?:.|\n)*?)<!--\s*endextract\s*-->/i);
     const blockOpts = getBlockOptions(parts[1], opts);
