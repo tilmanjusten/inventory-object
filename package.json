@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/tilmanjusten/inventory-object#readme",
   "dependencies": {
-    "lodash": "^4.1.0"
+    "lodash": "^4.6.1"
   }
 }
