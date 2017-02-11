@@ -205,7 +205,7 @@ function trimLines(lines, num) {
  * @returns {*}
  */
 function createId(value) {
-    return crypto.createHash('sha1').update(value, 'utf8').digest('hex')
+    return crypto.createHash('sha1').update(value, 'utf8').digest('hex').slice(0, 8);
 }
 
 /**
