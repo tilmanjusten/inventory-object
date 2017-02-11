@@ -103,10 +103,10 @@ function formalizeWrap(wrap) {
  * @returns {{}}
  */
 function getBlockOptions(annotation, defaults) {
-    const optionValues = annotation.split(/\w+:/)
+    const optionValues = annotation.split(/\w+\:/)
         .map((item) => item.replace(/<!--\s?|\s?-->|^\s+|\s+$/, ''))
         .filter((item) => !!item.length);
-    const optionKeys = annotation.match(/(\w+):/g).map((item) => item.replace(/[^\w]/, ''));
+    const optionKeys = annotation.match(/(\w+)\:/gi).map((item) => item.replace(/[^\w]/, ''));
 
     defaults = defaults || {
             viewWrap: {before: '', after: ''}
@@ -279,10 +279,14 @@ var InventoryObject = function (data) {
 InventoryObject.prototype.parseData = function(src, opts) {
     opts = Object.assign({}, getDefaultOptions(), opts);
 
+    // remove ending annotation <!-- endextract -->
+    src = src.replace(/<!--([\s\n]+)?(endextract)(.|\n)*?-->/gi, '')
+
     const parts = src.match(/(?:<!--)?\s*((?:.|\n)*?)-->((?:.|\n)*?)/i);
     const blockOpts = getBlockOptions(parts[1], opts);
-    // remove comments
-    const content = _.trimEnd(_.trimStart(src.replace(/<!--([\s\n]+)?(extract|endextract)(.|\n)*?-->/gi, ''), '\n\r'));
+
+    // remove extraction annotation and trim
+    const content = _.trimEnd(_.trimStart(src.replace(/<!--([\s\n]+)?(extract)(.|\n)*?-->/gi, ''), '\n\r'));
 
     // continue if name is empty
     if (!blockOpts.hasOwnProperty('extract')) {
