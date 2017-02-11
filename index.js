@@ -1,9 +1,9 @@
 'use strict';
 
-var _ = require('lodash'),
-    util = require('util'),
-    os = require('os'),
-    crypto = require('crypto');
+var _ = require('lodash');
+var util = require('util');
+var os = require('os');
+var crypto = require('crypto');
 
 /**
  * replace tabs by indent value
