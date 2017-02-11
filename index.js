@@ -279,9 +279,10 @@ var InventoryObject = function (data) {
 InventoryObject.prototype.parseData = function(src, opts) {
     opts = Object.assign({}, getDefaultOptions(), opts);
 
-    const parts = src.match(/<!--\s*((?:.|\n)*?)-->((?:.|\n)*?)<!--\s*endextract\s*-->/i);
+    const parts = src.match(/(?:<!--)?\s*((?:.|\n)*?)-->((?:.|\n)*?)/i);
     const blockOpts = getBlockOptions(parts[1], opts);
-    const content = _.trimEnd(_.trimStart(parts[2], '\n\r'));
+    // remove comments
+    const content = _.trimEnd(_.trimStart(src.replace(/<!--([\s\n]+)?(extract|endextract)(.|\n)*?-->/gi, ''), '\n\r'));
 
     // continue if name is empty
     if (!blockOpts.hasOwnProperty('extract')) {
