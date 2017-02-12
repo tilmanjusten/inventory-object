@@ -95,7 +95,7 @@ function formalizeWrap(wrap) {
  * becomes:
  * {
  *   extract: 'content/element.html',
- *   viewWrap: {before: '<div class="wrapper-element">', after: '</div>'}
+ *   wrap: {before: '<div class="wrapper-element">', after: '</div>'}
  * }
  *
  * @param annotation
@@ -109,7 +109,7 @@ function getBlockOptions(annotation, defaults) {
     const optionKeys = annotation.match(/(\w+)\:/gi).map((item) => item.replace(/[^\w]/, ''));
 
     defaults = defaults || {
-            viewWrap: {before: '', after: ''}
+            wrap: {before: '', after: ''}
         };
 
     const opts = {};
@@ -133,7 +133,7 @@ function getBlockOptions(annotation, defaults) {
     });
 
     // Process options
-    opts.wrap = formalizeWrap(opts.wrap || defaults.viewWrap);
+    opts.wrap = formalizeWrap(opts.wrap || defaults.wrap);
 
     return opts;
 }
@@ -162,7 +162,7 @@ function createId(value) {
 /**
  * get default options, scope as function instead of "public" property
  *
- * @returns {{indent: string, origin: string, resources: {classnames: {root: string, body: string}, meta: Array, scriptsFoot: {files: Array, inline: Array}, scriptsHead: {files: Array, inline: Array}, stylesHead: {files: Array, inline: Array}}, templateWrap: {before: string, after: string}, viewWrap: {before: string, after: string}}}
+ * @returns {{indent: string, origin: string, resources: {classnames: {root: string, body: string}, meta: Array, scriptsFoot: {files: Array, inline: Array}, scriptsHead: {files: Array, inline: Array}, stylesHead: {files: Array, inline: Array}}, wrap: {before: string, after: string}}}
  */
 function getDefaultOptions() {
     const resources = {
@@ -189,8 +189,7 @@ function getDefaultOptions() {
         indent: '    ',
         origin: '',
         resources: resources,
-        templateWrap: { before: '', after: '' },
-        viewWrap: { before: '', after: '' }
+        wrap: { before: '', after: '' }
     }
 }
 
@@ -212,11 +211,8 @@ var InventoryObject = function (data) {
     this.name = data.hasOwnProperty('name') ? data.name : '';
     this.options = data.hasOwnProperty('options') ? data.options : {};
     this.origin = data.hasOwnProperty('origin') ? data.origin : '';
-    this.partial        = data.hasOwnProperty('partial') ? data.partial : '';
     this.resources = data.hasOwnProperty('resources') ? data.resources : Object.assign({}, getDefaultOptions().resources);
-    this.template       = data.hasOwnProperty('template') ? data.template : '';
     this.usage = data.hasOwnProperty('usage') ? data.usage : [];
-    this.view           = data.hasOwnProperty('view') ? data.view : '';
     this.viewId = data.hasOwnProperty('viewId') ? data.viewId : '';
 };
 
@@ -258,30 +254,8 @@ InventoryObject.prototype.parseData = function (src, opts) {
         .map((line) => properIndentation(line, opts.indent));
     const leadingWhitespace = lines.map(countWhitespace);
     const crop = leadingWhitespace.reduce(getLeadingWhitespace);
-    const viewWrap = blockOpts.wrap;
 
     lines = trimLines(lines, crop);
-
-    let viewLines = util._extend([], lines);
-    let templateLines = util._extend([], lines);
-
-    // wrap partial if inline option viewWrap exists
-    if (viewWrap.before.length) {
-        viewLines = raiseIndent(viewLines);
-        viewLines.unshift('');
-        viewLines.unshift(viewWrap.before);
-        viewLines.push('');
-        viewLines.push(viewWrap.after);
-    }
-
-    // add templateWrap
-    if (typeof opts.templateWrap === 'object') {
-        let before = opts.templateWrap.before || '';
-        let after = opts.templateWrap.after || '';
-
-        templateLines.unshift(before);
-        templateLines.push(after);
-    }
 
     // set properties
     this.category = category;
@@ -291,11 +265,8 @@ InventoryObject.prototype.parseData = function (src, opts) {
     this.lines = lines;
     this.name = name;
     this.options = blockOpts;
-    this.partial        = lines.join(os.EOL);
     this.resources = opts.resources;
-    this.template       = templateLines.join(os.EOL);
-    this.view           = viewLines.join(os.EOL);
-    this.viewId = createId(this.view.replace(/\s+/gi, ''));
+    this.viewId = createId(this.lines.join('').replace(/\s+/gi, ''));
 };
 
 /**
