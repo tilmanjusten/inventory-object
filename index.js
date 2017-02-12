@@ -58,11 +58,11 @@ function raiseIndent(lines, offset) {
  * @returns {{before: '', after: ''}}
  */
 function formalizeWrap(wrap) {
-    const result = { before: '', after: '' };
+    const result = {before: '', after: ''};
 
     if ((typeof wrap === 'string' && wrap.length > 0) || typeof wrap === 'number') {
         result.before = result.after = wrap;
-    } else if  (Array.isArray(wrap) && wrap.length > 0) {
+    } else if (Array.isArray(wrap) && wrap.length > 0) {
         result.before = [].slice.call(wrap, 0, 1)[0];
         result.after = wrap.length > 1 ? [].slice.call(wrap, 1, 2)[0] : result.before;
     } else if (_.isPlainObject(wrap)) {
@@ -96,7 +96,7 @@ function formalizeWrap(wrap) {
  * {
  *   extract: 'content/element.html',
  *   viewWrap: {before: '<div class="wrapper-element">', after: '</div>'}
-     * }
+ * }
  *
  * @param annotation
  * @param defaults
@@ -136,55 +136,6 @@ function getBlockOptions(annotation, defaults) {
     opts.wrap = formalizeWrap(opts.wrap || defaults.viewWrap);
 
     return opts;
-}
-
-/**
- * Format options as string of HTML data parameters
- *
- * @param options
- * @returns {string}
- */
-function optionsToDataString(options) {
-    if (typeof options !== 'object') {
-        return '';
-    }
-
-    const prepared = [];
-    const processedOptions = Object.assign({}, options);
-
-    // prepare wrap option
-    if (processedOptions.hasOwnProperty('wrap')) {
-        processedOptions['wrap-before'] = processedOptions.wrap.before;
-        processedOptions['wrap-after'] = processedOptions.wrap.after;
-
-        delete(processedOptions.wrap);
-    }
-
-    // create data attributes
-    for (const el in processedOptions) {
-        if (processedOptions.hasOwnProperty(el) === false) {
-            continue;
-        }
-
-        const value = processedOptions[el];
-
-        // Ignore callbacks
-        if (typeof value === 'function') {
-            continue;
-        }
-
-        // Cleanup: Remove leading and trailing " and ', replace " by ' (e.g. in stringified objects)
-        const preparedVal = JSON.stringify(processedOptions[el])
-            .replace(/^['"]|['"]$/g, '')
-            .replace(/\\?"/g, "'");
-
-        // Build data parameter: data-name="value"
-        const param = 'data-' + el + '="' + preparedVal + '"';
-
-        prepared.push(param);
-    }
-
-    return prepared.join(' ');
 }
 
 /**
@@ -252,22 +203,21 @@ function getDefaultOptions() {
  * @constructor
  */
 var InventoryObject = function (data) {
-    data                = data || {};
+    data = data || {};
 
-    this.category       = data.hasOwnProperty('category') ? data.category : 'No category';
-    this.id             = data.hasOwnProperty('id') ? data.id : '';
-    this.group          = data.hasOwnProperty('group') ? data.group : '';
-    this.lines          = data.hasOwnProperty('lines') ? data.lines : 0;
-    this.name           = data.hasOwnProperty('name') ? data.name : '';
-    this.options        = data.hasOwnProperty('options') ? data.options : {};
-    this.optionsData    = data.hasOwnProperty('optionsData') ? data.optionsData : '';
-    this.origin         = data.hasOwnProperty('origin') ? data.origin : '';
+    this.category = data.hasOwnProperty('category') ? data.category : 'No category';
+    this.id = data.hasOwnProperty('id') ? data.id : '';
+    this.group = data.hasOwnProperty('group') ? data.group : '';
+    this.lines = data.hasOwnProperty('lines') ? data.lines : 0;
+    this.name = data.hasOwnProperty('name') ? data.name : '';
+    this.options = data.hasOwnProperty('options') ? data.options : {};
+    this.origin = data.hasOwnProperty('origin') ? data.origin : '';
     this.partial        = data.hasOwnProperty('partial') ? data.partial : '';
-    this.resources      = data.hasOwnProperty('resources') ? data.resources : Object.assign({}, getDefaultOptions().resources);
+    this.resources = data.hasOwnProperty('resources') ? data.resources : Object.assign({}, getDefaultOptions().resources);
     this.template       = data.hasOwnProperty('template') ? data.template : '';
-    this.usage          = data.hasOwnProperty('usage') ? data.usage : [];
+    this.usage = data.hasOwnProperty('usage') ? data.usage : [];
     this.view           = data.hasOwnProperty('view') ? data.view : '';
-    this.viewId         = data.hasOwnProperty('viewId') ? data.viewId : '';
+    this.viewId = data.hasOwnProperty('viewId') ? data.viewId : '';
 };
 
 /**
@@ -276,7 +226,7 @@ var InventoryObject = function (data) {
  * @param src
  * @param opts
  */
-InventoryObject.prototype.parseData = function(src, opts) {
+InventoryObject.prototype.parseData = function (src, opts) {
     opts = Object.assign({}, getDefaultOptions(), opts);
 
     // remove ending annotation <!-- endextract -->
@@ -309,14 +259,13 @@ InventoryObject.prototype.parseData = function(src, opts) {
     const leadingWhitespace = lines.map(countWhitespace);
     const crop = leadingWhitespace.reduce(getLeadingWhitespace);
     const viewWrap = blockOpts.wrap;
-    const templateWrapOptions = optionsToDataString(blockOpts);
 
     lines = trimLines(lines, crop);
 
     let viewLines = util._extend([], lines);
     let templateLines = util._extend([], lines);
 
-    // wrap partial if inline option viewWrap: exists
+    // wrap partial if inline option viewWrap exists
     if (viewWrap.before.length) {
         viewLines = raiseIndent(viewLines);
         viewLines.unshift('');
@@ -330,27 +279,23 @@ InventoryObject.prototype.parseData = function(src, opts) {
         let before = opts.templateWrap.before || '';
         let after = opts.templateWrap.after || '';
 
-        before = before.replace('{{wrapData}}', templateWrapOptions);
-        after = after.replace('{{wrapData}}', templateWrapOptions);
-
         templateLines.unshift(before);
         templateLines.push(after);
     }
 
     // set properties
-    this.category       = category;
-    this.group          = group;
+    this.category = category;
+    this.group = group;
     // remove all whitespace chars before creating the hash
-    this.id             = createId(src.replace(/\s+/gi, ''));
-    this.lines          = lines;
-    this.name           = name;
-    this.options        = blockOpts;
-    this.optionsData    = templateWrapOptions;
+    this.id = createId(src.replace(/\s+/gi, ''));
+    this.lines = lines;
+    this.name = name;
+    this.options = blockOpts;
     this.partial        = lines.join(os.EOL);
-    this.resources      = opts.resources;
+    this.resources = opts.resources;
     this.template       = templateLines.join(os.EOL);
     this.view           = viewLines.join(os.EOL);
-    this.viewId         = createId(this.view.replace(/\s+/gi, ''));
+    this.viewId = createId(this.view.replace(/\s+/gi, ''));
 };
 
 /**
@@ -369,7 +314,6 @@ InventoryObject.prototype.setProperty = function (prop, value) {
 
     return true;
 };
-
 
 
 /**
