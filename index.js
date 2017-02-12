@@ -91,11 +91,11 @@ function formalizeWrap(wrap) {
 /**
  * read options from annotation
  *
- * e.g.: <!-- extract:teaser/content-teaser--small.html wrap:<div class="teaser-list teaser-list--small">:</div> -->
- * gets:
+ * e.g.: <!-- extract:content/element.html wrap:<div class="wrapper-element">:</div> -->
+ * becomes:
  * {
-     *   extract: 'teaser/content-teaser--small.html',
-     *   viewWrap: {before: '<div class="teaser-list teaser-list--small">', after: '</div>'}
+ *   extract: 'content/element.html',
+ *   viewWrap: {before: '<div class="wrapper-element">', after: '</div>'}
      * }
  *
  * @param annotation
