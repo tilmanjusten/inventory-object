@@ -257,6 +257,9 @@ InventoryObject.prototype.parseData = function (src, opts) {
 
     lines = trimLines(lines, crop);
 
+    // remove empty lines before and after content
+    lines = lines.join(os.EOL).replace(/^\s*/i, '').replace(/\s*$/i, '').split(os.EOL);
+
     // set properties
     this.category = category;
     this.group = group;
