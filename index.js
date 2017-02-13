@@ -6,6 +6,40 @@ var os = require('os');
 var crypto = require('crypto');
 
 /**
+ * get default options, scope as function instead of "public" property
+ *
+ * @returns {{indent: string, origin: string, resources: {classnames: {root: string, body: string}, meta: Array, scriptsFoot: {files: Array, inline: Array}, scriptsHead: {files: Array, inline: Array}, stylesHead: {files: Array, inline: Array}}, wrap: {before: string, after: string}}}
+ */
+function getDefaultOptions() {
+    const resources = {
+        classnames: {
+            root: '',
+            body: ''
+        },
+        meta: [],
+        scriptsFoot: {
+            files: [],
+            inline: []
+        },
+        scriptsHead: {
+            files: [],
+            inline: []
+        },
+        stylesHead: {
+            files: [],
+            inline: []
+        }
+    };
+
+    return {
+        indent: '    ',
+        origin: '',
+        resources: resources,
+        wrap: {before: '', after: ''}
+    }
+}
+
+/**
  * replace tabs by indent value
  *
  * @param line
@@ -157,40 +191,6 @@ function trimLines(lines, num) {
  */
 function createId(value) {
     return crypto.createHash('sha1').update(value, 'utf8').digest('hex').slice(0, 8);
-}
-
-/**
- * get default options, scope as function instead of "public" property
- *
- * @returns {{indent: string, origin: string, resources: {classnames: {root: string, body: string}, meta: Array, scriptsFoot: {files: Array, inline: Array}, scriptsHead: {files: Array, inline: Array}, stylesHead: {files: Array, inline: Array}}, wrap: {before: string, after: string}}}
- */
-function getDefaultOptions() {
-    const resources = {
-        classnames: {
-            root: '',
-            body: ''
-        },
-        meta: [],
-        scriptsFoot: {
-            files: [],
-            inline: []
-        },
-        scriptsHead: {
-            files: [],
-            inline: []
-        },
-        stylesHead: {
-            files: [],
-            inline: []
-        }
-    };
-
-    return {
-        indent: '    ',
-        origin: '',
-        resources: resources,
-        wrap: { before: '', after: '' }
-    }
 }
 
 /**
