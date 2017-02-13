@@ -1,6 +1,6 @@
 {
   "name": "inventory-object",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "Model of an inventory object used in component-inventory and partial-extract",
   "main": "index.js",
   "scripts": {
